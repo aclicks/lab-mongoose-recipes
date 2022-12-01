@@ -1,23 +1,49 @@
-const mongoose = require('mongoose');
+import express from "express";
+import * as dotenv from "dotenv";
+import recipeRoute from "./routes/recipe.routes.js";
+import connect from "./config/db.config.js";
+import RecipeModel from './models/Recipe.model.js';
+import recipesData from "./data.json" assert { type: "json" };
 
-// Import of the model Recipe from './models/Recipe.model.js'
-const Recipe = require('./models/Recipe.model');
-// Import of the data from './data.json'
-const data = require('./data');
+dotenv.config();
 
-const MONGODB_URI = 'mongodb://localhost:27017/recipe-app';
+const app = express();
 
-// Connection to the database "recipe-app"
-mongoose
-  .connect(MONGODB_URI)
-  .then(x => {
-    console.log(`Connected to the database: "${x.connection.name}"`);
-    // Before adding any recipes to the database, let's remove all existing ones
-    return Recipe.deleteMany()
-  })
-  .then(() => {
-    // Run your code here, after you have insured that the connection was made
-  })
-  .catch(error => {
-    console.error('Error connecting to the database', error);
-  });
+app.use(express.json());
+
+app.use("/recipes-app", recipeRoute);
+
+connect();
+
+const startRecipe = {
+	title: "Carbonara",
+	level: "UltraPro Chef",
+	ingredients: [
+		"4 eggs",
+		"180g of spaghetti",
+		"80g of Guanciale",
+		"80g of Pecorino Cheese",
+		"Pepper and Salt to taste",
+	],
+	cuisine: "Italian",
+	dishType: "main_course",
+	duration: 20,
+	creator: "Italia",
+};
+
+
+RecipeModel.create(startRecipe).then(recipes => {console.log(recipes)});
+
+RecipeModel.insertMany(recipesData).then(recipes => {console.log(recipes)});
+
+
+RecipeModel.findOneAndUpdate({title: 'Rigatoni alla Genovese'},{duration: 100},{new: true, runValidators: true}).then(console.log);
+
+RecipeModel.deleteOne({title: 'Carot Cake'});
+
+
+app.listen(process.env.PORT, () => {
+	console.log(
+		`App up and running on port http://localhost:${process.env.PORT}`
+	);
+});
