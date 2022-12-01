@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import recipeRoute from "./routes/recipe.routes.js";
 import connect from "./config/db.config.js";
 import RecipeModel from './models/Recipe.model.js';
-import recipesData from "./data.json" assert { type: "json" };
+
 
 dotenv.config();
 
@@ -31,15 +31,6 @@ const startRecipe = {
 	creator: "Italia",
 };
 
-
-RecipeModel.create(startRecipe).then(recipes => {console.log(recipes)});
-
-RecipeModel.insertMany(recipesData).then(recipes => {console.log(recipes)});
-
-
-RecipeModel.findOneAndUpdate({title: 'Rigatoni alla Genovese'},{duration: 100},{new: true, runValidators: true}).then(console.log);
-
-RecipeModel.deleteOne({title: 'Carot Cake'});
 
 
 app.listen(process.env.PORT, () => {
